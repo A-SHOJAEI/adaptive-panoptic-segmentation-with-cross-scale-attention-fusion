@@ -1,0 +1,64 @@
+# Default configuration for adaptive panoptic segmentation training
+
+# Model configuration
+model:
+  num_classes: 19
+  embed_dim: 64
+  fpn_channels: 256
+  use_complexity_conditioning: true
+  pretrained_backbone: true
+
+# Data configuration
+data:
+  root_dir: null  # Path to Cityscapes dataset (null = use synthetic data)
+  batch_size: 4
+  num_workers: 4
+  image_height: 512
+  image_width: 1024
+  use_synthetic: true  # Use synthetic data if real data unavailable
+
+# Training configuration
+training:
+  num_epochs: 100
+  learning_rate: 0.0001
+  weight_decay: 0.0001
+  optimizer: adamw  # Options: adamw, sgd
+  lr_scheduler: cosine  # Options: cosine, step, plateau
+  lr_step_size: 30
+  lr_gamma: 0.1
+  gradient_clip: 5.0
+  use_amp: true  # Mixed precision training
+
+# Curriculum learning
+curriculum:
+  use_curriculum: true
+  curriculum_stages: 3
+  curriculum_epochs_per_stage: 10
+
+# Loss configuration
+loss:
+  boundary_weight: 2.0
+  semantic_weight: 1.0
+  instance_weight: 0.5
+
+# Early stopping
+early_stopping:
+  patience: 15
+
+# Checkpoint configuration
+checkpoint:
+  save_dir: checkpoints
+  save_frequency: 10  # Save every N epochs
+
+# Logging
+logging:
+  log_level: INFO
+  log_file: logs/training.log
+  use_mlflow: false
+  mlflow_experiment_name: adaptive_panoptic_segmentation
+
+# Random seed
+seed: 42
+
+# Device
+device: null  # null = auto-detect (cuda if available, else cpu)
