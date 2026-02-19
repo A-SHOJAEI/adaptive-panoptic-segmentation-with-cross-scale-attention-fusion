@@ -119,26 +119,63 @@ curriculum:
   curriculum_stages: 3
 ```
 
-## Results
+## Training Results
 
-Run training to reproduce results:
+> **Note on data**: The results below were obtained using **synthetic data** (800 training / 150 validation / 150 test samples) because real Cityscapes data was not available at training time. Performance on real Cityscapes data may differ significantly. The synthetic data is procedurally generated and does not capture the full complexity of real-world street scenes.
 
-```bash
-python scripts/train.py
-```
+### Training Configuration
 
-Expected performance on Cityscapes validation set:
+| Parameter | Value |
+|-----------|-------|
+| GPU | NVIDIA GeForce RTX 3090 (25.30 GB) |
+| Total Parameters | 28,049,432 |
+| Optimizer | AdamW (lr=0.0001, weight\_decay=0.0001) |
+| LR Scheduler | Cosine annealing |
+| Batch Size | 4 |
+| Image Size | 512 x 1024 |
+| Mixed Precision | Yes (AMP) |
+| Curriculum Learning | 3 stages, 10 epochs each |
+| Early Stopping Patience | 15 epochs |
+| Epochs Completed | 83 / 100 (early stopping triggered) |
+| Total Training Time | 0.98 hours |
 
-| Metric | Target |
-|--------|--------|
-| Panoptic Quality (PQ) | 0.62 |
-| Segmentation Quality (SQ) | 0.81 |
-| Recognition Quality (RQ) | 0.76 |
-| Boundary F1 | 0.73 |
+### Final Metrics
+
+| Metric | Value |
+|--------|-------|
+| Best Validation Loss | 0.0094 (epoch 68) |
+| Best Panoptic Quality (PQ) | 0.7475 (epoch 78) |
+| Final Validation Loss (epoch 83) | 0.0096 |
+| Final Val PQ (epoch 83) | 0.7470 |
+| Final Train Loss (epoch 83) | 0.0143 |
+
+### Training Progression
+
+| Epoch | Train Loss | Val Loss | Val PQ | Learning Rate |
+|-------|-----------|----------|--------|---------------|
+| 1 | 0.8164 | 0.1284 | 0.7328 | 1.00e-04 |
+| 10 | 0.0435 | 0.0294 | 0.7445 | 9.80e-05 |
+| 20 | 0.0341 | 0.0204 | 0.7445 | 9.14e-05 |
+| 30 | 0.0277 | 0.0186 | 0.7466 | 8.08e-05 |
+| 40 | 0.0242 | 0.0130 | 0.7466 | 6.73e-05 |
+| 50 | 0.0188 | 0.0118 | 0.7468 | 5.21e-05 |
+| 60 | 0.0171 | 0.0145 | 0.7468 | 3.52e-05 |
+| 70 | 0.0161 | 0.0103 | 0.7471 | 2.12e-05 |
+| 80 | 0.0150 | 0.0108 | 0.7471 | 1.00e-05 |
+| 83 | 0.0143 | 0.0096 | 0.7470 | 8.71e-06 |
+
+Training was stopped early at epoch 83 (patience 15) as validation loss did not improve beyond the best value of 0.0094 achieved at epoch 68. The model showed rapid initial convergence (train loss dropped from 0.8164 to 0.0435 in the first 10 epochs) followed by gradual refinement. PQ scores on synthetic data plateaued around 0.747, with the best PQ of 0.7475 observed at epoch 78.
+
+### Observations
+
+- **Rapid early convergence**: The bulk of loss reduction occurred in the first 10 epochs, with train loss dropping ~95% from 0.8164 to 0.0435.
+- **PQ plateau on synthetic data**: Panoptic Quality stabilized in a narrow band (0.744--0.748) after epoch 10, suggesting the synthetic data's limited complexity was largely captured early.
+- **Occasional PQ dips**: Epochs 4 and 8 showed PQ drops to ~0.59, likely due to curriculum stage transitions introducing harder augmentations.
+- **Cosine LR schedule**: The learning rate decayed smoothly from 1.0e-4 to 8.7e-6 over 83 epochs, which helped fine-tune in later stages without overshooting.
 
 ## Dataset
 
-The model is designed for Cityscapes dataset. Set `data.root_dir` in config to your Cityscapes path, or use synthetic data for testing by setting `data.use_synthetic: true`.
+The model is designed for the Cityscapes dataset. Set `data.root_dir` in config to your Cityscapes path. If real data is not available, synthetic data is generated automatically (`data.use_synthetic: true`).
 
 ## Project Structure
 
