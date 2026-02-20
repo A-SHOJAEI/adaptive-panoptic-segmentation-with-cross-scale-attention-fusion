@@ -1,0 +1,29 @@
+{
+  "project": "Adaptive Panoptic Segmentation with Cross-Scale Attention Fusion",
+  "dataset": "Synthetic Cityscapes-style (800 train / 150 val / 150 test)",
+  "model": "ResNet50 + FPN + Cross-Scale Attention Fusion",
+  "training": {
+    "total_parameters": 28049432,
+    "epochs_completed": 83,
+    "max_epochs": 100,
+    "early_stopping_patience": 15,
+    "batch_size": 4,
+    "image_size": "512x1024",
+    "learning_rate": 0.0001,
+    "mixed_precision": true,
+    "training_time_hours": 0.98,
+    "gpu": "NVIDIA GeForce RTX 3090"
+  },
+  "metrics": {
+    "best_val_loss": 0.009376,
+    "best_val_loss_epoch": 68,
+    "best_panoptic_quality": 0.7475,
+    "best_pq_epoch": 78,
+    "final_train_loss": 0.0143,
+    "final_val_loss": 0.0096,
+    "final_val_pq": 0.7470,
+    "final_val_sq": 0.7469,
+    "final_val_rq": 0.75,
+    "final_val_semantic_loss": 0.0039
+  }
+}
